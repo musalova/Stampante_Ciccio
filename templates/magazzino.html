@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magazzino Ciccio's</title>
+    <link rel="preload" href="/static/images/logo.jpg" as="image">
+    <link rel="stylesheet" href="/static/css/app.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); 
+            color: #ffffff; 
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            text-align: center; 
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: #ffffff;
+            padding: 20px;
+            margin: -20px -20px 25px -20px;
+            border-bottom: 1px solid #e8e8e8;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        
+        .logo-container { margin-bottom: 5px; }
+        .logo-container img { 
+            max-width: 120px; 
+            height: auto; 
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .nav-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            padding: 15px 25px; 
+            border: 1px solid #444;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .nav-bar a { 
+            color: #ffffff; 
+            text-decoration: none; 
+            font-weight: 600;
+            padding: 10px 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent;
+        }
+        
+        .nav-bar a:hover { 
+            background: #ffffff; 
+            color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255,255,255,0.15);
+        }
+        
+        .nav-title { 
+            color: #ffffff; 
+            font-weight: 700; 
+            font-size: 1em; 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .btn-add { 
+            background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+            color: #ffffff; 
+            border: none; 
+            padding: 20px 30px; 
+            border-radius: 16px; 
+            font-weight: 700;
+            width: 100%;
+            max-width: 500px;
+            font-size: 1.1em; 
+            margin: 0 auto 15px auto; 
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-add:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 16px 36px rgba(255,255,255,0.18), 0 12px 28px rgba(42,198,227,0.18);
+            background: #ffffff;
+            color: #0f1113;
+        }
+        
+        .btn-delete-all { 
+            background: transparent;
+            color: #ff6b6b; 
+            border: 2px solid #ff6b6b; 
+            padding: 16px 24px; 
+            border-radius: 16px; 
+            font-weight: 700;
+            width: 100%;
+            max-width: 500px;
+            font-size: 1em; 
+            margin: 0 auto 30px auto; 
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-delete-all:hover { 
+            background: #ff6b6b; 
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.3);
+        }
+        
+        .table-container {
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+            border: 1px solid #444;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse;
+        }
+        
+        th { 
+            color: #ffffff; 
+            padding: 20px 15px; 
+            border-bottom: 2px solid #444; 
+            font-size: 0.75em; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            background: #1a1a1a;
+        }
+        
+        td { 
+            padding: 22px 15px; 
+            border-bottom: 1px solid #333; 
+            text-align: left; 
+            font-size: 1em; 
+        }
+        
+        .qty-badge { 
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            color: #1a1a1a; 
+            padding: 8px 16px; 
+            border-radius: 10px; 
+            font-weight: 700;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+        }
+        
+        .btn-cancel-prod { 
+            background: transparent;
+            color: #ff6b6b; 
+            border: 2px solid #ff6b6b;
+            padding: 10px 18px; 
+            border-radius: 10px; 
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel-prod:hover { 
+            background: #ff6b6b; 
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+        
+        .input-cancel-qta { 
+            width: 65px; 
+            padding: 10px; 
+            font-size: 1em; 
+            text-align: center; 
+            border-radius: 10px; 
+            border: 2px solid #444; 
+            background: #1a1a1a; 
+            color: #ffffff;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .input-cancel-qta:focus { 
+            outline: none; 
+            border-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+        }
+        
+        .cancel-section { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            justify-content: flex-end;
+        }
+        
+        .prodotto-card { 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+        }
+        
+        .prodotto-card:hover { 
+            background-color: #333;
+            transform: translateX(5px);
+        }
+        
+        #modalAggiungi, #modalCancellaTutto { 
+            display:none; 
+            position:fixed; 
+            top:0; left:0; 
+            width:100%; height:100%; 
+            background:rgba(0,0,0,0.9); 
+            z-index:100; 
+            justify-content: center; 
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal-content { 
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            padding: 40px; 
+            width:90%; 
+            max-width: 450px; 
+            border: 1px solid #444;
+            border-radius:24px; 
+            text-align:left;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+        }
+        
+        .modal-content h3 {
+            color: #ffffff;
+            margin-top: 0;
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        label {
+            display: block;
+            font-size: 0.75em;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 20px 0 8px;
+            font-weight: 600;
+        }
+        
+        input, select { 
+            width:100%; 
+            padding:16px; 
+            margin:0 0 18px 0; 
+            border-radius:12px; 
+            border:2px solid #444; 
+            background:#1a1a1a; 
+            color:#ffffff;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+        }
+        
+        .btn-save { 
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            color:#1a1a1a; 
+            width:100%; 
+            padding:18px; 
+            border:none; 
+            border-radius:14px; 
+            font-weight:700;
+            cursor:pointer;
+            font-size: 1.05em;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255,255,255,0.15);
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.25);
+        }
+        
+        .btn-confirm-red { 
+            background:#ff6b6b;
+            color:#ffffff; 
+            width:100%; 
+            padding:18px; 
+            border:none; 
+            border-radius:14px; 
+            font-weight:700;
+            cursor:pointer;
+            font-size: 1.05em;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255,107,107,0.25);
+        }
+        
+        .btn-confirm-red:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,107,107,0.35);
+            background: #ff5252;
+        }
+        
+        .btn-cancel-modal {
+            background: transparent;
+            color: #aaa;
+            border: 2px solid #444;
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            cursor: pointer;
+            border-radius: 14px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .btn-cancel-modal:hover {
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+        
+        @media (max-width: 600px) {
+            .nav-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .nav-bar a {
+                width: 100%;
+                text-align: center;
+            }
+            .cancel-section {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .modal-content {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="/static/images/logo.jpg" alt="Ciccio's Logo">
+        </div>
+    </div>
+    
+    <div class="nav-bar surface">
+        <a href="/">⬅️ Torna alla Home</a>
+        <span class="nav-title">MAGAZZINO ({{ giacenze|length }})</span>
+    </div>
+
+    <button class="btn-add btn btn-primary" onclick="apriModal()">
+        <span>➕</span> AGGIUNGI CARICO
+    </button>
+    <button class="btn-delete-all btn btn-danger" onclick="apriModalCancellaTutto()">
+        <span>🗑️</span> CANCELLA TUTTO MAGAZZINO
+    </button>
+
+    <div class="table-container surface">
+        <table>
+            <thead>
+                <tr>
+                    <th>PRODOTTO</th>
+                    <th style="text-align: center;">Q.TÀ TOTALE</th>
+                    <th style="text-align: center;">AZIONI</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in giacenze %}
+                <tr class="prodotto-card">
+                    <td style="font-weight: 800; letter-spacing:-0.2px;" onclick="vaiDettaglio('{{ p.Prodotto|e }}')">{{ p.Prodotto }}</td>
+                    <td style="text-align: center;" onclick="vaiDettaglio('{{ p.Prodotto|e }}')"><span class="qty-badge badge">{{ p.Quantità_Totale }}</span></td>
+                    <td>
+                        <div class="cancel-section">
+                            <input type="number" class="input-cancel-qta" data-nome="{{ p.Prodotto|e }}" data-index="{{ loop.index }}" placeholder="Q.tà" min="1" max="{{ p.Quantità_Totale }}">
+                            <button class="btn btn-warn" data-nome="{{ p.Prodotto|e }}" data-qta="{{ p.Quantità_Totale }}" data-index="{{ loop.index }}" onclick="cancellaProdotto(this)">Cancella</button>
+                            <button class="btn btn-ristampa" data-nome="{{ p.Prodotto|e }}" data-index="{{ loop.index }}" onclick="ristampaProdotto(this)">Ristampa</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="modalAggiungi" class="modal">
+        <div class="modal-content content surface">
+            <h3>📦 Nuovo Carico</h3>
+            
+            <label>Scegli Prodotto</label>
+            <select id="agg_nome" class="select">
+                <option value="">-- Seleziona --</option>
+                {% for nome in nomi_prodotti %}
+                <option value="{{ nome }}">{{ nome }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Quantità</label>
+            <input type="number" id="agg_qta" placeholder="Inserisci numero" class="input">
+
+            <label>Lotto (Solo per prodotti Esterni)</label>
+            <input type="text" id="agg_lotto" placeholder="Lascia vuoto se Interno" class="input">
+            
+            <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;">
+                <input type="checkbox" id="agg_stampa" style="width:auto;height:auto;"> Stampa anche
+            </label>
+            
+            <button class="btn-save btn btn-primary" id="btnSalva" onclick="salvaProdotto()">SALVA IN MAGAZZINO</button>
+            <button class="btn-cancel-modal btn" onclick="chiudiModal()">Annulla</button>
+        </div>
+    </div>
+
+    <div id="modalCancellaTutto" class="modal">
+        <div class="modal-content content surface">
+            <h3 style="color:#dc3545; margin-top:0; text-align: center;">⚠️ ATTENZIONE</h3>
+            <p style="color: #1a1a1a; text-align: center; font-size: 1.05em;">Stai per cancellare <strong>TUTTO</strong> il magazzino.</p>
+            <p style="color: #666; font-size: 0.95em; text-align: center; margin: 15px 0;">Questa azione non può essere annullata.</p>
+            <p style="color: #1a1a1a; font-size: 0.95em; text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px;">Prodotti: <strong>{{ giacenze|length }}</strong></p>
+            <button class="btn-confirm-red btn btn-danger" onclick="confermaCancellaTutto()">🗑️ CANCELLA TUTTO</button>
+            <button class="btn-cancel-modal btn" onclick="chiudiModalCancellaTutto()">Annulla</button>
+        </div>
+    </div>
+
+    <script>
+        function apriModal() { document.getElementById('modalAggiungi').style.display = 'flex'; }
+        function chiudiModal() { document.getElementById('modalAggiungi').style.display = 'none'; }
+        
+        function apriModalCancellaTutto() { document.getElementById('modalCancellaTutto').style.display = 'flex'; }
+        function chiudiModalCancellaTutto() { document.getElementById('modalCancellaTutto').style.display = 'none'; }
+        
+        function cancellaProdotto(btn) {
+            var nome = btn.getAttribute('data-nome');
+            var maxQta = parseInt(btn.getAttribute('data-qta'), 10);
+            var index = btn.getAttribute('data-index');
+            var input = document.querySelector('.input-cancel-qta[data-index="' + index + '"]');
+            var qta = parseInt(input.value, 10);
+            
+            if (!qta || qta < 1) {
+                alert('Inserisci una quantità valida (minimo 1)');
+                return;
+            }
+            if (qta > maxQta) {
+                alert('Quantità massima disponibile: ' + maxQta);
+                return;
+            }
+            
+            if (!confirm('Cancellare ' + qta + ' pezzi di "' + nome + '"?\nVerranno rimossi dal più vecchio al più nuovo.')) {
+                return;
+            }
+            
+            fetch('/cancella_prodotto_per_tipo', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nome: nome, quantita: qta })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Cancellati ' + data.cancellate + ' pezzi di ' + nome);
+                    location.reload();
+                } else {
+                    alert(data.message || 'Errore durante la cancellazione');
+                }
+            })
+            .catch(e => alert('Errore: ' + e));
+        }
+        
+        function confermaCancellaTutto() {
+            if (!confirm('Sei sicuro di voler cancellare TUTTO il magazzino?')) {
+                return;
+            }
+            
+            fetch('/cancella_tutto_magazzino', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Magazzino svuotato!');
+                    location.reload();
+                } else {
+                    alert(data.message || 'Errore');
+                }
+            })
+            .catch(e => alert('Errore: ' + e));
+        }
+
+        function rimuoviQuantitaDaRiga(btn) {
+            var row = btn.closest('tr');
+            var rigaId = parseInt(row.getAttribute('data-riga-id'), 10);
+            var maxQta = parseInt(row.getAttribute('data-qta-max'), 10);
+            var input = row.querySelector('.input-rimuovi-qta');
+            var qta = parseInt(input && input.value ? input.value : 0, 10);
+            if (!qta || qta < 1) {
+                alert('Inserisci una quantità da rimuovere (min 1).');
+                return;
+            }
+            if (qta > maxQta) {
+                alert('La quantità da rimuovere non può superare ' + maxQta + '.');
+                return;
+            }
+            if (!confirm('Rimuovere ' + qta + ' pezzi da questa riga?')) return;
+            fetch('/rimuovi_quantita', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ riga_id: rigaId, quantita: qta })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') location.reload();
+                else alert(data.message || 'Errore');
+            });
+        }
+
+        function eliminaRigaDaRiga(btn) {
+            var row = btn.closest('tr');
+            var id = parseInt(row.getAttribute('data-riga-id'), 10);
+            if (confirm("Eliminare questa riga?")) {
+                fetch('/elimina_prodotto/' + id, { method: 'POST' }).then(function() { location.reload(); });
+            }
+        }
+
+        function vaiDettaglio(nome) {
+            window.location.href = '/magazzino/prodotto/' + encodeURIComponent(nome);
+        }
+
+        // Flag per prevenire doppio click
+        let isSaving = false;
+        
+        function salvaProdotto() {
+            if (isSaving) return; // Previene doppio click
+            isSaving = true;
+            
+            const btn = document.getElementById('btnSalva');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ SALVATAGGIO...';
+            btn.disabled = true;
+            
+            const dati = {
+                nome: document.getElementById('agg_nome').value,
+                qta: document.getElementById('agg_qta').value,
+                lotto: document.getElementById('agg_lotto').value
+            };
+            if(!dati.nome || !dati.qta) {
+                alert("Scegli prodotto e quantità!");
+                isSaving = false;
+                btn.textContent = originalText;
+                btn.disabled = false;
+                return;
+            }
+
+            fetch('/aggiungi_prodotto', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(dati)
+            }).then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const stampa = document.getElementById('agg_stampa').checked;
+                    if (!stampa) {
+                        location.reload();
+                        return;
+                    }
+                    const lottoEff = data.lotto || document.getElementById('agg_lotto').value || '';
+                    const payload = { nome: dati.nome, qta: parseInt(dati.qta || 1, 10) };
+                    if (lottoEff) payload.lotto = lottoEff;
+                    return fetch('/stampa_ristampa', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(payload)
+                    }).then(function(r) {
+                        const ct = r.headers.get('content-type') || '';
+                        if (ct.indexOf('application/pdf') !== -1) {
+                            return r.blob().then(function(blob) {
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = 'ristampa_' + (dati.nome.replace(/\s/g, '_').substring(0, 25)) + '.pdf';
+                                a.click();
+                                URL.revokeObjectURL(url);
+                                location.reload();
+                            });
+                        } else {
+                            return r.json().then(function(j){ alert(j.message || 'Errore'); location.reload(); });
+                        }
+                    });
+                } else {
+                    alert(data.message || 'Errore durante il salvataggio');
+                    isSaving = false;
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(e => {
+                alert('Errore: ' + e);
+                isSaving = false;
+                btn.textContent = originalText;
+                btn.disabled = false;
+            });
+        }
+        
+        function ristampaProdotto(btn) {
+            const nome = btn.getAttribute('data-nome');
+            const index = btn.getAttribute('data-index');
+            let qta = 1;
+            const input = document.querySelector('.input-cancel-qta[data-index="' + index + '"]');
+            if (input && input.value) qta = parseInt(input.value, 10) || 1;
+            if (!confirm('Ristampare ' + qta + ' etichette per "' + nome + '" senza modificare il magazzino?')) return;
+            const payload = { nome: nome, qta: qta };
+            fetch('/stampa_ristampa', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            }).then(function(r) {
+                const ct = r.headers.get('content-type') || '';
+                if (ct.indexOf('application/pdf') !== -1) {
+                    return r.blob().then(function(blob) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'ristampa_' + (nome.replace(/\s/g, '_').substring(0, 25)) + '.pdf';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    });
+                } else {
+                    return r.json().then(function(j){ alert(j.message || 'Errore'); });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

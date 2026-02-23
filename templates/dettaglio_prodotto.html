@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dettaglio {{ nome_prodotto }} - Ciccio's</title>
+    <link rel="preload" href="/static/images/logo.jpg" as="image">
+    <link rel="stylesheet" href="/static/css/app.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); 
+            color: #ffffff; 
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            text-align: center; 
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: #ffffff;
+            padding: 20px;
+            margin: -20px -20px 25px -20px;
+            border-bottom: 1px solid #e8e8e8;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        
+        .nav-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            padding: 15px 25px; 
+            border: 1px solid #444;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-width: 900px;
+            margin: 0 auto 25px auto;
+        }
+        
+        .nav-bar a { 
+            color: #ffffff; 
+            text-decoration: none; 
+            font-weight: 600;
+            padding: 10px 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent;
+        }
+        
+        .nav-bar a:hover { 
+            background: #ffffff; 
+            color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255,255,255,0.15);
+        }
+        
+        .nav-title { 
+            color: #ffffff; 
+            font-weight: 700; 
+            font-size: 0.9em; 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        h2 { 
+            color: #ffffff; 
+            margin: 30px 0; 
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .btn-back { 
+            background: linear-gradient(135deg, #3ddc97 0%, #2ac6e3 100%);
+            color: #0f1113; 
+            border: none; 
+            padding: 18px 32px; 
+            border-radius: 14px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            font-size: 1em; 
+            margin-bottom: 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 36px rgba(255,255,255,0.18), 0 12px 28px rgba(42,198,227,0.18);
+            background: #ffffff;
+            color: #0f1113;
+        }
+        
+        .table-container {
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+            border: 1px solid #444;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse;
+        }
+        
+        th { 
+            color: #ffffff; 
+            padding: 18px 12px; 
+            border-bottom: 2px solid #444; 
+            font-size: 0.75em; 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            background: #1a1a1a;
+        }
+        
+        td { 
+            padding: 18px 12px; 
+            border-bottom: 1px solid #333; 
+            text-align: left; 
+            font-size: 0.95em; 
+            vertical-align: middle;
+        }
+        
+        .qty-badge { 
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            color: #1a1a1a; 
+            padding: 8px 14px; 
+            border-radius: 10px; 
+            font-weight: 700;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+        }
+        
+        .lotto-badge { 
+            background: #333; 
+            color: #ffffff; 
+            padding: 8px 14px; 
+            border-radius: 10px; 
+            font-size: 0.9em;
+            font-weight: 600;
+            border: 1px solid #444;
+        }
+        
+        .btn-del { 
+            background: #ff6b6b; 
+            color: white; 
+            border: none; 
+            padding: 10px 14px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.25);
+        }
+        
+        .btn-del:hover {
+            transform: scale(1.1);
+            background: #ff5252;
+            box-shadow: 0 6px 20px rgba(255,107,107,0.35);
+        }
+        
+        .riga-rimuovi { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+        }
+        
+        .riga-rimuovi input { 
+            width: 65px; 
+            padding: 10px; 
+            margin: 0; 
+            font-size: 1em; 
+            text-align: center; 
+            border-radius: 10px; 
+            border: 2px solid #444; 
+            background: #1a1a1a; 
+            color: #ffffff;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .riga-rimuovi input:focus {
+            outline: none;
+            border-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+        }
+        
+        .btn-rimuovi { 
+            background: #fd7e14; 
+            color: white; 
+            border: none; 
+            padding: 10px 14px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 0.85em; 
+            white-space: nowrap;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(253,126,20,0.25);
+        }
+        
+        .btn-rimuovi:hover {
+            transform: scale(1.05);
+            background: #e56b0a;
+            box-shadow: 0 6px 20px rgba(253,126,20,0.35);
+        }
+        
+        .date-cell {
+            font-size: 0.9em; 
+            color: #aaa;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .nav-bar a {
+                width: 100%;
+                text-align: center;
+            }
+            th, td {
+                padding: 12px 8px;
+                font-size: 0.85em;
+            }
+            .riga-rimuovi {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .riga-rimuovi input {
+                width: 100%;
+            }
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            table {
+                min-width: 640px;
+            }
+            .lotto-badge {
+                font-size: 0.85em;
+                padding: 6px 10px;
+            }
+            .btn-rimuovi, .btn-del, .btn {
+                padding: 12px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar surface"> 
+        <a href="/magazzino">⬅️ Torna al Magazzino</a>
+        <span class="nav-title">DETTAGLIO PRODOTTO</span>
+    </div>
+
+    <h2>{{ nome_prodotto }}</h2>
+
+    <button class="btn-back" onclick="window.location.href='/magazzino'">
+        <span>🔙</span> TORNA AL MAGAZZINO
+    </button>
+
+    <div class="table-container surface">
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align: center;">QUANTITÀ</th>
+                    <th>LOTTO</th>
+                    <th>DATA INIZIO</th>
+                    <th>SCADENZA</th>
+                    <th style="text-align: center;">RIMUOVI</th>
+                    <th style="text-align: center;">AZIONI</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in righe %}
+                <tr data-riga-id="{{ r.riga_id }}" data-qta-max="{{ r.Quantità_Attuale }}">
+                    <td style="text-align: center;"><span class="qty-badge badge">{{ r.Quantità_Attuale }}</span></td>
+                    <td><span class="lotto-badge">{{ r.Lotto }}</span></td>
+                    <td class="date-cell">
+                        {% if r.Data_Inizio != 'N/D' and r.Data_Inizio %}
+                            {% if '-' in r.Data_Inizio %}
+                                {{ r.Data_Inizio[:10] }}
+                            {% else %}
+                                {{ r.Data_Inizio }}
+                            {% endif %}
+                        {% else %}
+                            N/D
+                        {% endif %}
+                    </td>
+                    <td class="date-cell">
+                        {% if r.Scadenza != 'N/D' %}
+                            {% if '-' in r.Scadenza %}
+                                {{ r.Scadenza[:10] }}
+                            {% else %}
+                                {{ r.Scadenza }}
+                            {% endif %}
+                        {% else %}
+                            N/D
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">
+                        <div class="riga-rimuovi">
+                            <input type="number" class="input-rimuovi-qta" min="1" max="{{ r.Quantità_Attuale }}" placeholder="n" title="Quantità da rimuovere">
+                            <button class="btn btn-warn" onclick="rimuoviQuantitaDaRiga(this)">Rimuovi</button>
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="btn btn-ristampa" onclick="ristampaDaRiga(this)">Ristampa</button>
+                        <button class="btn btn-danger" onclick="eliminaRigaDaRiga(this)">🗑️</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function rimuoviQuantitaDaRiga(btn) {
+            var row = btn.closest('tr');
+            var rigaId = parseInt(row.getAttribute('data-riga-id'), 10);
+            var maxQta = parseInt(row.getAttribute('data-qta-max'), 10);
+            var input = row.querySelector('.input-rimuovi-qta');
+            var qta = parseInt(input && input.value ? input.value : 0, 10);
+            if (!qta || qta < 1) {
+                alert('Inserisci una quantità da rimuovere (min 1).');
+                return;
+            }
+            if (qta > maxQta) {
+                alert('La quantità da rimuovere non può superare ' + maxQta + '.');
+                return;
+            }
+            if (!confirm('Rimuovere ' + qta + ' pezzi da questa riga?')) return;
+            fetch('/rimuovi_quantita', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ riga_id: rigaId, quantita: qta })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.status === 'success') location.reload();
+                else alert(data.message || 'Errore');
+            });
+        }
+
+        function eliminaRigaDaRiga(btn) {
+            var row = btn.closest('tr');
+            var id = parseInt(row.getAttribute('data-riga-id'), 10);
+            if (confirm("Eliminare questa riga?")) {
+                fetch('/elimina_prodotto/' + id, { method: 'POST' })
+                .then(function() { window.location.href = '/magazzino'; });
+            }
+        }
+
+        function ristampaDaRiga(btn) {
+            var row = btn.closest('tr');
+            var lotto = row.querySelector('.lotto-badge').textContent.trim();
+            var nome = "{{ nome_prodotto }}";
+            var qta = prompt('Quante etichette ristampare per lotto ' + lotto + '?', '1');
+            if (!qta) return;
+            qta = parseInt(qta, 10) || 1;
+            if (qta < 1) return;
+            if (!confirm('Ristampare ' + qta + ' etichette per "' + nome + '" lotto ' + lotto + ' senza modificare il magazzino?')) return;
+            var payload = { nome: nome, qta: qta, lotto: lotto };
+            fetch('/stampa_ristampa', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            }).then(function(r) {
+                var ct = r.headers.get('content-type') || '';
+                if (ct.indexOf('application/pdf') !== -1) {
+                    return r.blob().then(function(blob) {
+                        var url = URL.createObjectURL(blob);
+                        var a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'ristampa_' + (nome.replace(/\s/g, '_').substring(0, 25)) + '.pdf';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    });
+                } else {
+                    return r.json().then(function(j){ alert(j.message || 'Errore'); });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

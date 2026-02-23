@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
+  <!-- Background -->
+  <rect width="200" height="240" fill="#0a0a0a"/>
+  
+  <!-- Face outline (simplified) -->
+  <ellipse cx="100" cy="95" rx="65" ry="75" fill="#ffffff" stroke="#ffffff" stroke-width="2"/>
+  
+  <!-- Sunglasses -->
+  <g fill="#0a0a0a">
+    <!-- Left lens -->
+    <ellipse cx="75" cy="85" rx="28" ry="22"/>
+    <!-- Right lens -->
+    <ellipse cx="125" cy="85" rx="28" ry="22"/>
+    <!-- Bridge -->
+    <rect x="92" y="78" width="16" height="8" rx="2"/>
+    <!-- Left arm -->
+    <rect x="45" y="80" width="12" height="6" rx="2"/>
+    <!-- Right arm -->
+    <rect x="143" y="80" width="12" height="6" rx="2"/>
+  </g>
+  
+  <!-- Smile -->
+  <path d="M 70 125 Q 100 145, 130 125" stroke="#0a0a0a" stroke-width="4" fill="none" stroke-linecap="round"/>
+  
+  <!-- Nose suggestion -->
+  <path d="M 95 95 L 100 110 L 105 95" fill="#0a0a0a" opacity="0.3"/>
+  
+  <!-- Hair suggestion - top -->
+  <path d="M 35 85 Q 35 50, 100 45 Q 165 50, 165 85" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="3"/>
+  
+  <!-- Text: CICCIO'S -->
+  <text x="100" y="205" font-family="Arial Black, Arial, sans-serif" font-size="28" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="2">CICCIO'S</text>
+</svg>

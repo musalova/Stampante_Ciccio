@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ciccio's Printer</title>
+    <link rel="preload" href="/static/images/logo.jpg" as="image">
+    <link rel="stylesheet" href="/static/css/app.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); 
+            color: #ffffff; 
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            text-align: center; 
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: #ffffff;
+            padding: 25px 20px;
+            margin: -20px -20px 30px -20px;
+            border-bottom: 1px solid #e8e8e8;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        
+        .logo-container { margin-bottom: 10px; }
+        .logo-container img { 
+            max-width: 140px; 
+            height: auto; 
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle { 
+            color: #666; 
+            margin-top: 12px; 
+            font-size: 0.8em; 
+            letter-spacing: 4px; 
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        
+        .nav-bar { 
+            margin-bottom: 30px; 
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-nav {
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px;
+            color: #ffffff; 
+            text-decoration: none;
+            border: 2px solid #ffffff; 
+            padding: 14px 28px;
+            border-radius: 50px; 
+            font-weight: 600; 
+            font-size: 0.9em;
+            background: transparent; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-nav:hover { 
+            background: #ffffff; 
+            color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255,255,255,0.15);
+        }
+        
+        .btn-main { 
+            background: linear-gradient(135deg, #3ddc97 0%, #2ac6e3 100%);
+            color: #0f1113; 
+            padding: 24px 32px; 
+            border: none; 
+            border-radius: 16px; 
+            font-size: 1.15em; 
+            font-weight: 700; 
+            width: 100%; 
+            max-width: 500px;
+            margin: 0 auto 35px auto;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .btn-main:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 16px 36px rgba(255,255,255,0.18), 0 12px 28px rgba(42,198,227,0.18);
+            background: #ffffff;
+            color: #0f1113;
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            position: relative;
+        }
+        
+        #searchBar {
+            width: 100%; 
+            padding: 18px 25px 18px 50px; 
+            font-size: 1.1em; 
+            border-radius: 50px; 
+            border: 2px solid #444; 
+            background: #252525;
+            color: #ffffff; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        #searchBar:focus { 
+            outline: none; 
+            border-color: #ffffff; 
+            box-shadow: 0 6px 25px rgba(255,255,255,0.1);
+        }
+        
+        #searchBar::placeholder { color: #888; }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 1.2em;
+        }
+        
+        .product-list { 
+            display: grid;
+            gap: 16px; 
+            padding-bottom: 40px; 
+            max-width: 1200px; 
+            margin: 0 auto;
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 700px) { .product-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (min-width: 1100px) { .product-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        
+        .product-card {
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            border: 1px solid #333; 
+            padding: 22px 25px; 
+            text-align: left;
+            border-radius: 16px; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .product-card:hover { 
+            border-color: #555; 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+        
+        .prod-info { flex: 1; min-width: 0; }
+        
+        .prod-name { 
+            font-size: 1.2em; 
+            font-weight: 700; 
+            color: #ffffff; 
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+        
+        .prod-cat { 
+            font-size: 0.75em; 
+            color: #aaa; 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+        
+        .print-section { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            margin-left: 15px;
+        }
+        
+        .btn-print {
+            background: linear-gradient(135deg, #3ddc97 0%, #2ac6e3 100%);
+            color: #0f1113; 
+            border: none; 
+            padding: 14px 24px;
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 0.85em;
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        
+        .btn-print:hover:not(:disabled) { 
+            transform: scale(1.05); 
+            box-shadow: 0 12px 30px rgba(255,255,255,0.18), 0 8px 20px rgba(42,198,227,0.18);
+            background: #ffffff;
+            color: #0f1113;
+        }
+        
+        .btn-print:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .input-qta-stampa {
+            width: 60px; 
+            padding: 12px; 
+            font-size: 1em; 
+            text-align: center;
+            border-radius: 10px; 
+            border: 2px solid #444; 
+            background: #1a1a1a;
+            color: #ffffff;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .input-qta-stampa:focus { 
+            outline: none; 
+            border-color: #ffffff; 
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+        }
+        
+        .lotto-esterno-wrap { margin-top: 12px; }
+        
+        .lotto-esterno-wrap label { 
+            font-size: 0.7em; 
+            color: #888; 
+            display: block; 
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+        
+        .lotto-esterno-wrap input {
+            width: 100%;
+            max-width: 220px; 
+            padding: 12px 15px; 
+            font-size: 0.95em;
+            border-radius: 10px; 
+            border: 2px solid #444; 
+            background: #1a1a1a;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .lotto-esterno-wrap input:focus { 
+            outline: none; 
+            border-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+        }
+        
+        #modalLinea { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.9); 
+            z-index: 200; 
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal-linea-content { 
+            background: linear-gradient(135deg, #252525 0%, #1f1f1f 100%);
+            padding: 40px; 
+            width: 90%; 
+            max-width: 450px; 
+            border: 1px solid #444;
+            border-radius: 24px; 
+            text-align: left;
+            max-height: 85vh; 
+            overflow-y: auto;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+        }
+        
+        .modal-linea-content h3 { 
+            color: #ffffff; 
+            margin-top: 0; 
+            font-size: 1.5em; 
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .modal-linea-content p { 
+            color: #aaa; 
+            font-size: 0.95em; 
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .modal-linea-content label { 
+            display: block; 
+            margin-top: 20px; 
+            font-size: 0.8em; 
+            color: #ffffff;
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+        
+        .modal-linea-content input { 
+            width: 100%; 
+            padding: 16px; 
+            margin: 0 0 20px 0;
+            border-radius: 12px; 
+            border: 2px solid #444; 
+            background: #1a1a1a;
+            color: #ffffff; 
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-linea-content input:focus { 
+            outline: none; 
+            border-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+        }
+        
+        .modal-linea-content .btn-confirm { 
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            color: #1a1a1a; 
+            padding: 18px; 
+            border: none; 
+            border-radius: 14px;
+            font-weight: 700; 
+            font-size: 1.05em; 
+            width: 100%; 
+            cursor: pointer;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255,255,255,0.15);
+        }
+        
+        .modal-linea-content .btn-confirm:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 30px rgba(255,255,255,0.25);
+        }
+        
+        .modal-linea-content .btn-cancel { 
+            background: transparent;
+            color: #aaa; 
+            border: 2px solid #444;
+            width: 100%;
+            margin-top: 15px; 
+            cursor: pointer; 
+            font-size: 0.95em; 
+            padding: 14px;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .modal-linea-content .btn-cancel:hover { 
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+        
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #333;
+            border-top: 4px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        
+        @media (max-width: 480px) {
+            .product-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .print-section {
+                margin-left: 0;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .btn-main {
+                font-size: 1em;
+                padding: 20px 24px;
+            }
+            .modal-linea-content {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header surface" style="border-radius: 0; box-shadow: none;">
+        <div class="logo-container">
+            <img src="/static/images/logo.jpg" alt="Ciccio's Logo">
+            <p class="subtitle">Printer System</p>
+        </div>
+    </div>
+    
+    <div class="nav-bar">
+        <a href="/magazzino" class="btn-nav"><span>📦</span> Magazzino</a>
+    </div>
+    
+    <button class="btn-main btn btn-primary" onclick="stampaLinea()">
+        <span>🔥</span> STAMPA LINEA COMPLETA
+    </button>
+    
+    <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchBar" onkeyup="filtraProdotti()" placeholder="Cerca prodotto..." class="input">
+    </div>
+    
+    <div id="modalLinea">
+        <div class="modal-linea-content">
+            <h3>Lotti mancanti</h3>
+            <p>Inserisci il lotto per i prodotti esterni:</p>
+            <div id="modalLineaInputs"></div>
+            <button class="btn-confirm" onclick="confermaLottiLinea()">Conferma e Stampa</button>
+            <button class="btn-cancel" onclick="chiudiModalLinea()">Annulla</button>
+        </div>
+    </div>
+    
+    <div id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Generazione etichetta...</div>
+    </div>
+    
+    <div class="product-list" id="listaProdotti">
+        {% for p in prodotti %}
+        <div class="product-card surface" data-nome="{{ p.PRODOTTO|e }}" data-categoria="{{ (p.CATEGORIA or '')|lower|e }}">
+            <div class="prod-info">
+                <div class="prod-name">{{ p.PRODOTTO }}</div>
+                <div class="prod-cat">{{ p.CATEGORIA }}</div>
+                {% if (p.CATEGORIA or '')|lower != 'interno' %}
+                <div class="lotto-esterno-wrap">
+                    <label>Lotto esterno</label>
+                    <input type="text" class="input-lotto" placeholder="Inserisci lotto">
+                </div>
+                {% endif %}
+            </div>
+            <div class="print-section">
+                <input type="number" class="input-qta-stampa input" placeholder="Q.tà" value="1" min="1">
+                <button class="btn-print btn btn-primary" onclick="stampaSingoloDaCard(this)">STAMPA</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <script>
+        // Flags per prevenire doppio click
+        let isPrintingSingle = false;
+        let isPrintingLinea = false;
+
+        function mostraLoading(testo) {
+            document.querySelector('.loading-text').textContent = testo || 'Generazione etichetta...';
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+        
+        function nascondiLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        function filtraProdotti() {
+            let input = document.getElementById('searchBar').value.toUpperCase();
+            let cards = document.getElementsByClassName('product-card');
+            for (let i = 0; i < cards.length; i++) {
+                var nome = (cards[i].getAttribute('data-nome') || '').toUpperCase();
+                cards[i].style.display = nome.includes(input) ? "" : "none";
+            }
+        }
+
+        function stampaSingoloDaCard(btn) {
+            if (isPrintingSingle) return;
+            isPrintingSingle = true;
+            btn.disabled = true;
+            btn.textContent = '⏳...';
+            
+            var card = btn.closest('.product-card');
+            var prodotto = card.getAttribute('data-nome') || '';
+            var categoria = card.getAttribute('data-categoria') || '';
+            var inputQta = card.querySelector('.input-qta-stampa');
+            var qta = parseInt(inputQta ? inputQta.value : 1, 10) || 1;
+            
+            if (!prodotto) { 
+                alert('Prodotto non valido.'); 
+                isPrintingSingle = false;
+                btn.disabled = false;
+                btn.textContent = 'STAMPA';
+                return; 
+            }
+            var payload = { nome: prodotto, quantita: qta };
+            if (categoria !== 'interno') {
+                var inputLotto = card.querySelector('.input-lotto');
+                var lotto = inputLotto ? inputLotto.value.trim() : '';
+                if (lotto) payload.lotto = lotto;
+            }
+            if (!confirm("Stampare " + qta + " etichetta/e per: " + prodotto + (payload.lotto ? " - Lotto: " + payload.lotto : "") + "?")) {
+                isPrintingSingle = false;
+                btn.disabled = false;
+                btn.textContent = 'STAMPA';
+                return;
+            }
+            mostraLoading('Generazione etichetta...');
+            fetch('/stampa_singolo', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            })
+            .then(function(r) {
+                var ct = r.headers.get('content-type') || '';
+                if (ct.indexOf('application/pdf') !== -1) {
+                    return r.blob().then(function(blob) {
+                        var url = URL.createObjectURL(blob);
+                        var a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'etichetta_' + (prodotto.replace(/\s/g, '_').substring(0, 25)) + '.pdf';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        alert('Etichetta scaricata. Apri il PDF e stampalo sulla comandiera.');
+                    });
+                } else {
+                    return r.json().then(function(data) {
+                        alert(data.message || data.error || 'Errore');
+                    });
+                }
+            })
+            .finally(function() {
+                isPrintingSingle = false;
+                btn.disabled = false;
+                btn.textContent = 'STAMPA';
+                nascondiLoading();
+            });
+        }
+
+        var prodottiLineaCache = [];
+
+        function stampaLinea() {
+            if (isPrintingLinea) return;
+            isPrintingLinea = true;
+            
+            fetch('/prepara_stampa_linea')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var prodotti = data.prodotti || [];
+                console.log('[DEBUG] Prodotti ricevuti:', prodotti);
+                var mancanti = prodotti.filter(function(p) { 
+                    var isEsterno = p.categoria === 'esterno';
+                    var lottoVal = p.lotto;
+                    var hasLotto = lottoVal && lottoVal.trim && lottoVal.trim() !== '' && lottoVal !== 'N/D' && lottoVal !== 'null' && lottoVal !== 'undefined';
+                    console.log('[DEBUG] Prodotto:', p.nome, 'cat:', p.categoria, 'lotto:', lottoVal, 'isEsterno:', isEsterno, 'hasLotto:', hasLotto);
+                    return isEsterno && !hasLotto; 
+                });
+                console.log('[DEBUG] Mancanti (senza lotto):', mancanti);
+                prodottiLineaCache = prodotti;
+                if (mancanti.length > 0) {
+                    var html = '';
+                    mancanti.forEach(function(p) {
+                        html += '<label>' + p.nome + '</label><input type="text" data-nome="' + (p.nome || '').replace(/"/g, '&quot;') + '" placeholder="Lotto esterno" class="input-lotto-linea">';
+                    });
+                    document.getElementById('modalLineaInputs').innerHTML = html;
+                    document.getElementById('modalLinea').style.display = 'flex';
+                    isPrintingLinea = false;
+                } else {
+                    eseguiStampaLinea(prodotti);
+                }
+            })
+            .catch(function() { 
+                alert('Errore caricamento prodotti.'); 
+                isPrintingLinea = false;
+            });
+        }
+
+        function confermaLottiLinea() {
+            if (isPrintingLinea) return;
+            isPrintingLinea = true;
+            
+            var inputs = document.querySelectorAll('.input-lotto-linea');
+            var valid = true;
+            inputs.forEach(function(inp) {
+                if (!inp.value.trim()) valid = false;
+            });
+            if (!valid) {
+                alert('Compila tutti i lotti richiesti.');
+                isPrintingLinea = false;
+                return;
+            }
+            var lottoByNome = {};
+            inputs.forEach(function(inp) {
+                lottoByNome[inp.getAttribute('data-nome')] = inp.value.trim().toUpperCase();
+            });
+            var prodotti = prodottiLineaCache.map(function(p) {
+                return {
+                    nome: p.nome,
+                    categoria: p.categoria,
+                    lotto: p.categoria === 'interno' ? null : (lottoByNome[p.nome] || p.lotto),
+                    qta: p.qta || 1
+                };
+            });
+            chiudiModalLinea();
+            eseguiStampaLinea(prodotti);
+        }
+
+        function chiudiModalLinea() {
+            document.getElementById('modalLinea').style.display = 'none';
+        }
+
+        function eseguiStampaLinea(prodotti) {
+            var totaleEtichette = prodotti.reduce(function(sum, p) { return sum + (p.qta || 1); }, 0);
+            if (!confirm('Stampare ' + totaleEtichette + ' etichette totali per ' + prodotti.length + ' prodotti?')) {
+                isPrintingLinea = false;
+                return;
+            }
+            mostraLoading('Generazione linea...');
+            var items = prodotti.map(function(p) {
+                return { nome: p.nome, lotto: p.categoria === 'interno' ? null : (p.lotto || ''), qta: p.qta || 1 };
+            });
+            fetch('/stampa_linea_totale', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ items: items })
+            })
+            .then(function(r) {
+                var ct = r.headers.get('content-type') || '';
+                if (ct.indexOf('application/pdf') !== -1) {
+                    return r.blob().then(function(blob) {
+                        var url = URL.createObjectURL(blob);
+                        var a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'linea_ciccio.pdf';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        alert('Linea stampata! Totale etichette: ' + totaleEtichette);
+                    });
+                } else {
+                    return r.json().then(function(data) { alert(data.message || data.error || 'Errore'); });
+                }
+            })
+            .catch(function() { alert('Errore durante la stampa.'); })
+            .finally(function() {
+                isPrintingLinea = false;
+                nascondiLoading();
+            });
+        }
+    </script>
+</body>
+</html>

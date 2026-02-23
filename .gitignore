@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+*.pyc
+.Python
+env/
+venv/
+.venv/
+build/
+dist/
+.DS_Store
+.env
+.env.*
+node_modules/
+
+# Credentials and secrets
+credenziali.json
+*.pem
+*.p12
+*.key
+*.crt
+
+# OS junk
+Thumbs.db
+ehthumbs.db
+desktop.ini
