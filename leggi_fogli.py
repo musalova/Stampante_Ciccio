@@ -4,21 +4,23 @@ from datetime import datetime
 import os
 import json
 
-# 1. ACCESSO AL DATABASE
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-# Percorso credenziali: usa prima variabili d'ambiente, poi file locale (che è ignorato da git)
-cred_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
-if cred_json:
-    try:
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(cred_json), scope)
-    except Exception as e:
-        raise RuntimeError(f"Variabile GOOGLE_CREDENTIALS_JSON non valida: {e}")
-else:
-    cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS") or os.getenv("CRED_PATH") or "credenziali.json"
-    if not os.path.exists(cred_path):
-        raise RuntimeError("Credenziali non trovate. Imposta GOOGLE_CREDENTIALS_JSON con il contenuto della key, oppure GOOGLE_APPLICATION_CREDENTIALS/CRED_PATH con il percorso al file (non tracciato).")
-    creds = ServiceAccountCredentials.from_json_keyfile_name(cred_path, scope)
-client = gspread.authorize(creds)
+_client = None
+_scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+
+def get_client():
+    global _client
+    if _client is not None:
+        return _client
+    cred_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
+    if cred_json:
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(cred_json), _scope)
+    else:
+        cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS") or os.getenv("CRED_PATH") or "credenziali.json"
+        if not os.path.exists(cred_path):
+            raise RuntimeError("Credenziali mancanti")
+        creds = ServiceAccountCredentials.from_json_keyfile_name(cred_path, _scope)
+    _client = gspread.authorize(creds)
+    return _client
 
 def genera_lotto_interno(sigla):
     # Regola: GiornoGiornoMeseAnno + Sigla (es. 18180226SC)
