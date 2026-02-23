@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ciccio-printer
+    env: python
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app -b 0.0.0.0:$PORT
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: GOOGLE_CREDENTIALS_JSON
+        sync: false
+      - key: FLASK_DEBUG
+        value: "0"
