@@ -11,11 +11,11 @@ def get_client():
     global _client
     if _client is not None:
         return _client
-    cred_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
+    cred_json = os.getenv("GOOGLE_CREDENTIALS_JSON") or os.getenv("GOOGLE_SHEET_CREDS_JSON")
     if cred_json:
         creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(cred_json), _scope)
     else:
-        cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS") or os.getenv("CRED_PATH") or "credenziali.json"
+        cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS") or os.getenv("CRED_PATH") or os.getenv("GOOGLE_SHEET_CREDS_PATH") or "credenziali.json"
         if not os.path.exists(cred_path):
             raise RuntimeError("Credenziali mancanti")
         creds = ServiceAccountCredentials.from_json_keyfile_name(cred_path, _scope)
