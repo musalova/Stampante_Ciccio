@@ -3,6 +3,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import os
 import json
+import base64
 
 _client = None
 _scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -13,7 +14,19 @@ def get_client():
         return _client
     cred_json = os.getenv("GOOGLE_CREDENTIALS_JSON") or os.getenv("GOOGLE_SHEET_CREDS_JSON")
     if cred_json:
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(cred_json), _scope)
+        txt = cred_json.strip()
+        try:
+            data = json.loads(txt)
+        except Exception:
+            try:
+                decoded = base64.b64decode(txt).decode("utf-8")
+                data = json.loads(decoded)
+            except Exception:
+                raise RuntimeError("Credenziali JSON non valide")
+        for k in ("auth_uri", "token_uri", "auth_provider_x509_cert_url", "client_x509_cert_url"):
+            if k in data and isinstance(data[k], str):
+                data[k] = data[k].replace("`", "").strip()
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(data, _scope)
     else:
         cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS") or os.getenv("CRED_PATH") or os.getenv("GOOGLE_SHEET_CREDS_PATH") or "credenziali.json"
         if not os.path.exists(cred_path):
