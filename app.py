@@ -8,7 +8,7 @@ from reportlab.lib.units import mm
 from reportlab.lib.utils import ImageReader
 import os
 import threading
-from leggi_fogli import client
+from leggi_fogli import get_client
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
@@ -67,7 +67,7 @@ def _leggi_db_cached(force_refresh=False):
     
     # Leggi da Google Sheets
     try:
-        sh = client.open("Database_Ciccio_Lumia")
+        sh = get_client().open("Database_Ciccio_Lumia")
         ws_anag = sh.worksheet("ANAGRAFICA")
         anagrafica = ws_anag.get_all_records()
         
@@ -683,8 +683,11 @@ def cache_status():
 
 # Precarica dati all'avvio dell'app
 print("Precaricamento dati...")
-_leggi_db_cached(force_refresh=True)
-print("Cache pronta!")
+try:
+    _leggi_db_cached(force_refresh=True)
+    print("Cache pronta!")
+except Exception as e:
+    print(f"Precaricamento non riuscito: {e}")
 
 
 if __name__ == '__main__':
