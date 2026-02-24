@@ -421,14 +421,9 @@ def stampa_linea_totale():
                     return jsonify({"status": "error", "message": f"Manca lotto per {nome}."}), 400
         data_inizio = datetime.now().strftime('%d/%m/%Y')
         data_inizio_sheet = datetime.now().strftime('%Y-%m-%d')
-        data_scadenza = _calcola_scadenza_da_anagrafica(p_info) or "N/D"
-        scad_sheet = data_inizio_sheet
-        if data_scadenza != "N/D":
-            try:
-                dt = datetime.strptime(data_scadenza, '%d/%m/%Y')
-                scad_sheet = dt.strftime('%Y-%m-%d')
-            except ValueError:
-                pass
+        # Per stampa linea: scadenza giornaliera (oggi)
+        data_scadenza = datetime.now().strftime('%d/%m/%Y')
+        scad_sheet = datetime.now().strftime('%Y-%m-%d')
         try:
             qta = int(it.get('qta') or 1)
         except Exception:
