@@ -71,6 +71,14 @@
             text-transform: uppercase;
         }
         
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 15px auto;
+        }
+        .search-input {
+            width: 100%;
+        }
+        
         .btn-add { 
             background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
             color: #ffffff; 
@@ -402,6 +410,10 @@
         <span class="nav-title">MAGAZZINO ({{ giacenze|length }})</span>
     </div>
 
+    <div class="search-container">
+        <input type="text" id="searchMagazzino" class="input search-input" placeholder="Cerca prodotto in magazzino..." oninput="filtraMagazzino()">
+    </div>
+
     <button class="btn-add btn btn-primary" onclick="apriModal()">
         <span>➕</span> AGGIUNGI CARICO
     </button>
@@ -690,6 +702,16 @@
                 } else {
                     return r.json().then(function(j){ alert(j.message || 'Errore'); });
                 }
+            });
+        }
+        
+        function filtraMagazzino() {
+            var term = (document.getElementById('searchMagazzino').value || '').toLowerCase().trim();
+            var rows = document.querySelectorAll('.table-container tbody tr');
+            rows.forEach(function(tr) {
+                var td = tr.querySelector('td');
+                var nome = td ? td.textContent.toLowerCase() : '';
+                tr.style.display = (!term || nome.indexOf(term) !== -1) ? '' : 'none';
             });
         }
         function mostraAttesa(testo) {
