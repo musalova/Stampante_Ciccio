@@ -301,6 +301,36 @@
             box-shadow: 0 10px 30px rgba(255,255,255,0.25);
         }
         
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.2);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 18px;
+        }
+        .loading-text {
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
         .btn-confirm-red { 
             background:#ff6b6b;
             color:#ffffff; 
@@ -444,6 +474,11 @@
         </div>
     </div>
 
+    <div id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Aggiornamento magazzino...</div>
+    </div>
+
     <script>
         function apriModal() { document.getElementById('modalAggiungi').style.display = 'flex'; }
         function chiudiModal() { document.getElementById('modalAggiungi').style.display = 'none'; }
@@ -554,6 +589,7 @@
         function salvaProdotto() {
             if (isSaving) return; // Previene doppio click
             isSaving = true;
+            mostraAttesa('Salvataggio in corso...');
             
             const btn = document.getElementById('btnSalva');
             const originalText = btn.textContent;
@@ -582,9 +618,12 @@
                 if (data.status === 'success') {
                     const stampa = document.getElementById('agg_stampa').checked;
                     if (!stampa) {
-                        location.reload();
-                        return;
+                        mostraAttesa('Aggiornamento magazzino...');
+                        return fetch('/api/cache/refresh', { method: 'POST' })
+                            .then(() => { location.reload(); })
+                            .catch(() => { location.reload(); });
                     }
+                    mostraAttesa('Generazione etichetta...');
                     const lottoEff = data.lotto || document.getElementById('agg_lotto').value || '';
                     const payload = { nome: dati.nome, qta: parseInt(dati.qta || 1, 10) };
                     if (lottoEff) payload.lotto = lottoEff;
@@ -613,6 +652,7 @@
                     isSaving = false;
                     btn.textContent = originalText;
                     btn.disabled = false;
+                    nascondiAttesa();
                 }
             })
             .catch(e => {
@@ -620,6 +660,7 @@
                 isSaving = false;
                 btn.textContent = originalText;
                 btn.disabled = false;
+                nascondiAttesa();
             });
         }
         
@@ -650,6 +691,18 @@
                     return r.json().then(function(j){ alert(j.message || 'Errore'); });
                 }
             });
+        }
+        function mostraAttesa(testo) {
+            const ov = document.getElementById('loadingOverlay');
+            if (!ov) return;
+            if (testo && ov.querySelector('.loading-text')) {
+                ov.querySelector('.loading-text').textContent = testo;
+            }
+            ov.style.display = 'flex';
+        }
+        function nascondiAttesa() {
+            const ov = document.getElementById('loadingOverlay');
+            if (ov) ov.style.display = 'none';
         }
     </script>
 </body>
