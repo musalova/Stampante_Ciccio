@@ -434,6 +434,7 @@ def stampa_linea_totale():
             riga_id, q = mappa[key]
             try:
                 ws.update_cell(riga_id, 2, q + qta)
+                ws.update_cell(riga_id, 6, scad_sheet)
             except Exception as e:
                 print(e)
         else:
